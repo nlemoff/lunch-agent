@@ -1,20 +1,31 @@
 {
   "name": "lunch-agent",
-  "image": "mcr.microsoft.com/devcontainers/universal:2",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:22",
   "features": {
-    "ghcr.io/devcontainers/features/node:1": { "version": "22" },
     "ghcr.io/anthropics/devcontainer-features/claude-code:1.0": {}
   },
   "customizations": {
     "vscode": {
-      "extensions": ["ms-vsliveshare.vsliveshare"]
+      "extensions": [
+        "ms-vsliveshare.vsliveshare"
+      ]
     }
   },
   "secrets": {
-    "OPENROUTER_API_KEY": { "description": "Used by the app's agent." },
-    "ANTHROPIC_API_KEY": { "description": "Used by Claude Code in the terminal." }
+    "OPENROUTER_API_KEY": {
+      "description": "Used by the app's agent."
+    },
+    "ANTHROPIC_API_KEY": {
+      "description": "Used by Claude Code in the terminal."
+    }
   },
   "postCreateCommand": "npm run reset-db",
-  "forwardPorts": [3000],
-  "portsAttributes": { "3000": { "label": "App" } }
+  "forwardPorts": [
+    3000
+  ],
+  "portsAttributes": {
+    "3000": {
+      "label": "App"
+    }
+  }
 }
