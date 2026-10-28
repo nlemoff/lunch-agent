@@ -14,9 +14,6 @@
   "secrets": {
     "OPENROUTER_API_KEY": {
       "description": "Used by the app's agent."
-    },
-    "ANTHROPIC_API_KEY": {
-      "description": "Used by Claude Code in the terminal."
     }
   },
   "postCreateCommand": "npm run reset-db",

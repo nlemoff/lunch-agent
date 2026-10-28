@@ -33,7 +33,7 @@ npm run reset-db
 
 ## The agent
 
-The agent is a tool-calling loop in `src/agent.js`. It calls `anthropic/claude-sonnet-5.5` through OpenRouter until the model replies without calling a tool. Set `AGENT_MODEL` in `.env` to try another model.
+The agent is a tool-calling loop in `src/agent.js`. It calls `nvidia/nemotron-3.5-super-vl:free` through OpenRouter until the model replies without calling a tool. Set `AGENT_MODEL` in `.env` to try another model.
 
 Its tools are in `src/tools.js`:
 
@@ -64,9 +64,9 @@ Its tools are in `src/tools.js`:
 
 The repo includes a dev container with Node 22, Claude Code, and Live Share.
 
-1. In the repo, go to **Settings → Secrets and variables → Codespaces** and add two secrets with low spend limits: `OPENROUTER_API_KEY` for the app and `ANTHROPIC_API_KEY` for Claude Code.
+1. In the repo, go to **Settings → Secrets and variables → Codespaces** and add an `OPENROUTER_API_KEY` secret for the app. The default model is free, but give the key a low spend limit anyway.
 2. Click **Code → Codespaces → ⋯ → New with options** and pick a 4-core machine. In github.com/settings/codespaces, raise the default idle timeout to about 120 minutes.
-3. Once it boots, run `claude` in a terminal to check it works without a login, then run `npm start` in a second terminal.
+3. Once it boots, run `claude` in a terminal and sign in with your Claude account. Then run `npm start` in a second terminal.
 4. In the **Ports** tab, set port 3000 to **Public** and copy the URL.
 5. Start Live Share from the status bar and share the invite link. Share both terminals as read/write.
 

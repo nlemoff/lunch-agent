@@ -24,7 +24,7 @@ function priceOrder(restaurantId, items) {
 function deliveryEta(r) {
   const minutes = r.prep_minutes + Math.round(r.distance_miles * 10);
   const eta = new Date(Date.now() + minutes * 60_000);
-  return eta.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+  return eta.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", timeZone: OFFICE_TIME_ZONE });
 }
 
 const itemsSchema = {

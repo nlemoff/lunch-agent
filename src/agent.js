@@ -2,7 +2,7 @@ import { db } from "./db.js";
 import { tools, toolDefinitions } from "./tools.js";
 
 const BASE_URL = process.env.OPENROUTER_BASE_URL ?? "https://openrouter.ai/api/v1";
-export const MODEL = process.env.AGENT_MODEL ?? "anthropic/claude-sonnet-5.5";
+export const MODEL = process.env.AGENT_MODEL ?? "nvidia/nemotron-3.5-super-vl:free";
 const MAX_TURNS = 15;
 
 const SYSTEM_PROMPT = `You are a lunch-ordering agent for an office. Someone on the team tells you what they want, and you plan the order.
