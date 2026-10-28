@@ -70,4 +70,4 @@ The repo includes a dev container with Node 22, Claude Code, and Live Share.
 4. In the **Ports** tab, set port 3000 to **Public** and copy the URL.
 5. Start Live Share from the status bar and share the invite link. Share both terminals as read/write.
 
-Afterwards, delete the codespace at github.com/codespaces and revoke both keys.
+Afterwards, run `/logout` in Claude Code, delete the codespace at github.com/codespaces, and revoke the OpenRouter key.
