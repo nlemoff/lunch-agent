@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lunch Agent</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <div class="brand">Lunch <span>Agent</span></div>
+    <nav>
+      <a href="#order">Order</a>
+      <a href="#orders">Orders</a>
+      <a href="#runs">Runs</a>
+      <a href="#team">Team</a>
+    </nav>
+  </header>
+
+  <main>
+    <section id="order" class="tab">
+      <h1>What should we order?</h1>
+      <form id="request-form">
+        <textarea id="request" rows="3" placeholder="order me mediterranean food to feed 30 hungry engineers"></textarea>
+        <button class="primary">Ask the agent</button>
+      </form>
+      <div id="result"></div>
+    </section>
+
+    <section id="orders" class="tab">
+      <h1>Orders</h1>
+      <table>
+        <thead><tr><th>#</th><th>Created</th><th>Restaurant</th><th>Total</th><th>Delivery</th><th>Status</th></tr></thead>
+        <tbody id="orders-body"></tbody>
+      </table>
+    </section>
+
+    <section id="runs" class="tab">
+      <h1>Runs</h1>
+      <table>
+        <thead><tr><th>#</th><th>Request</th><th>Status</th><th>Steps</th><th>Errors</th><th>Started</th></tr></thead>
+        <tbody id="runs-body"></tbody>
+      </table>
+      <div id="run-detail"></div>
+    </section>
+
+    <section id="team" class="tab">
+      <h1>Team</h1>
+      <form id="team-form" class="team-form">
+        <label>Office address <input name="address"></label>
+        <label>Headcount <input name="headcount" type="number" min="1"></label>
+        <label>Budget per person ($) <input name="budget_per_person" type="number" min="0" step="0.5"></label>
+        <label>Dietary notes <textarea name="dietary_notes" rows="3"></textarea></label>
+        <button class="primary">Save</button>
+        <span id="team-saved" class="muted"></span>
+      </form>
+    </section>
+  </main>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

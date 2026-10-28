@@ -1,0 +1,10 @@
+{
+  "name": "lunch-agent",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22.13" },
+  "scripts": {
+    "start": "node --env-file-if-exists=.env --no-warnings=ExperimentalWarning server.js",
+    "reset-db": "node --no-warnings=ExperimentalWarning reset-db.js"
+  }
+}
