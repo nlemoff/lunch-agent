@@ -1,21 +1,33 @@
 import { db } from "./db.js";
 
 const DELIVERY_FEE = 15;
+export const OFFICE_TIME_ZONE = "America/Los_Angeles";
 
 // Cedar Grill's menu provider is down. The agent sees the same error a real third-party API would return.
 const MENU_PROVIDER_DOWN = new Set(["cedar-grill"]);
 
 function restaurant(id) {
   const row = db.prepare("SELECT * FROM restaurants WHERE id = ?").get(id);
-  if (!row) throw new Error(`No restaurant with id "${id}"`);
+  if (!row) {
+    const ids = db.prepare("SELECT id FROM restaurants").all().map((r) => r.id);
+    throw new Error(`No restaurant with id "${id}". Valid ids: ${ids.join(", ")}`);
+  }
   return row;
 }
 
+// Models sometimes send the items array as a JSON string, so accept both.
+function parseItems(items) {
+  const list = typeof items === "string" ? JSON.parse(items) : items;
+  if (!Array.isArray(list) || list.length === 0) throw new Error("items must be a non-empty array of {item_id, quantity}");
+  return list;
+}
+
 function priceOrder(restaurantId, items) {
-  const lines = items.map(({ item_id, quantity }) => {
-    const item = db.prepare("SELECT * FROM menu_items WHERE id = ? AND restaurant_id = ?").get(item_id, restaurantId);
-    if (!item) throw new Error(`No menu item "${item_id}" at ${restaurantId}`);
-    return { item_id, name: item.name, quantity, price: item.price, serves: item.serves };
+  const menu = db.prepare("SELECT * FROM menu_items WHERE restaurant_id = ?").all(restaurant(restaurantId).id);
+  const lines = parseItems(items).map(({ item_id, quantity }) => {
+    const item = menu.find((m) => m.id === item_id);
+    if (!item) throw new Error(`No menu item "${item_id}" at ${restaurantId}. Valid item ids: ${menu.map((m) => m.id).join(", ")}`);
+    return { item_id, name: item.name, quantity: Number(quantity), price: item.price, serves: item.serves, tags: item.tags };
   });
   const subtotal = lines.reduce((sum, line) => sum + line.price * line.quantity, 0);
   return { lines, subtotal, delivery_fee: DELIVERY_FEE, total: subtotal + DELIVERY_FEE };

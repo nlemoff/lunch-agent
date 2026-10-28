@@ -13,7 +13,7 @@ const SYSTEM_PROMPT = `You are a lunch-ordering agent for an office. Someone on 
 4. Choose items so everyone is fed, and price the order.
 5. Call propose_order with your final choice.
 
-Then reply in two or three sentences: the restaurant, what you're ordering, the total, the delivery time, and ask the user to confirm.`;
+Then reply in two or three plain sentences, with no markdown: the restaurant, what you're ordering, the total, and the delivery time.`;
 
 function recordStep(runId, kind, name, input, output, error, startedAt) {
   db.prepare(
@@ -51,9 +51,14 @@ async function runTool(runId, call) {
   }
 }
 
-// Runs the agent on one request until it replies without calling a tool. Every step is saved to run_steps.
-export async function runAgent(request) {
+// Starts a run and returns its id right away. The agent keeps working in the background and saves every step to run_steps.
+export function startAgent(request) {
   const runId = Number(db.prepare("INSERT INTO runs (request, status, model) VALUES (?, 'running', ?)").run(request, MODEL).lastInsertRowid);
+  runAgent(runId, request);
+  return runId;
+}
+
+async function runAgent(runId, request) {
   const messages = [
     { role: "system", content: SYSTEM_PROMPT },
     { role: "user", content: request },
@@ -80,7 +85,7 @@ export async function runAgent(request) {
           message.content,
           runId,
         );
-        return runId;
+        return;
       }
       for (const call of calls) {
         messages.push({ role: "tool", tool_call_id: call.id, content: await runTool(runId, call) });
@@ -89,6 +94,5 @@ export async function runAgent(request) {
     throw new Error(`Stopped after ${MAX_TURNS} turns without an answer`);
   } catch (err) {
     db.prepare("UPDATE runs SET status = 'failed', error = ?, finished_at = datetime('now') WHERE id = ?").run(err.message, runId);
-    return runId;
   }
 }

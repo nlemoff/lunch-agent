@@ -4,55 +4,140 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Lunch Agent</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400..600&family=Geist+Mono:wght@400;500&display=swap">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header>
-    <div class="brand">Lunch <span>Agent</span></div>
+  <aside class="sidebar">
+    <div class="product">
+      <svg class="mark" viewBox="0 0 24 24" aria-hidden="true">
+        <rect width="24" height="24" rx="6" fill="var(--primary)" />
+        <path d="M5 11h14a7 7 0 0 1-14 0Z" fill="var(--on-primary)" />
+        <path d="M9 8.5c0-1 1-1.2 1-2.2M13 8.5c0-1 1-1.2 1-2.2" stroke="var(--on-primary)" stroke-width="1.5" stroke-linecap="round" fill="none" />
+      </svg>
+      <div>
+        <div class="product-name">Lunch Agent</div>
+        <div class="product-scope" id="scope">Fieldnote HQ</div>
+      </div>
+    </div>
     <nav>
-      <a href="#order">Order</a>
-      <a href="#orders">Orders</a>
-      <a href="#runs">Runs</a>
-      <a href="#team">Team</a>
+      <a href="#new">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10" /></svg>
+        New order
+      </a>
+      <a href="#orders">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 2.5h9v11l-2-1.2-2.5 1.2-2.5-1.2-2 1.2Zm2.5 3.5h4M6 9h4" /></svg>
+        Orders
+      </a>
+      <a href="#runs">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M1.5 8h3l2-5 3 10 2-5h3" /></svg>
+        Runs
+      </a>
+      <a href="#team">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="6" cy="5.5" r="2.5" /><path d="M1.5 13.5c.5-2.5 2.3-3.5 4.5-3.5s4 1 4.5 3.5M10.5 3.2a2.5 2.5 0 0 1 0 4.6M12 10.3c1.4.4 2.2 1.5 2.5 3.2" /></svg>
+        Team
+      </a>
     </nav>
-  </header>
+  </aside>
 
-  <main>
-    <section id="order" class="tab">
-      <h1>What should we order?</h1>
-      <form id="request-form">
-        <textarea id="request" rows="3" placeholder="order me mediterranean food to feed 30 hungry engineers"></textarea>
-        <button class="primary">Ask the agent</button>
-      </form>
-      <div id="result"></div>
+  <main class="canvas">
+    <section id="view-new" class="view">
+      <header class="title-row">
+        <div>
+          <h1>New order</h1>
+          <p class="subline" id="office-line"></p>
+        </div>
+      </header>
+      <div class="split">
+        <div class="stack">
+          <form id="request-form" class="panel composer">
+            <label for="request" class="sr-only">What should we order?</label>
+            <textarea id="request" rows="3" placeholder="What should we order? For example: mediterranean for the whole team, with plenty of vegetarian options."></textarea>
+            <div class="composer-foot">
+              <div class="examples" id="examples"></div>
+              <button class="button primary" id="plan-button">Plan order</button>
+            </div>
+          </form>
+          <div id="run-area" class="stack"></div>
+        </div>
+        <div class="stack rail">
+          <section class="panel">
+            <h2>Office</h2>
+            <dl class="facts" id="office-facts"></dl>
+          </section>
+          <section class="panel">
+            <div class="panel-head"><h2>Recent orders</h2><a href="#orders" class="link">View all</a></div>
+            <ul class="recent" id="recent-orders"></ul>
+          </section>
+        </div>
+      </div>
     </section>
 
-    <section id="orders" class="tab">
-      <h1>Orders</h1>
-      <table>
-        <thead><tr><th>#</th><th>Created</th><th>Restaurant</th><th>Total</th><th>Delivery</th><th>Status</th></tr></thead>
-        <tbody id="orders-body"></tbody>
-      </table>
+    <section id="view-orders" class="view">
+      <header class="title-row">
+        <div>
+          <h1>Orders</h1>
+          <p class="subline" id="orders-line"></p>
+        </div>
+      </header>
+      <div class="panel flush">
+        <table>
+          <thead>
+            <tr><th>Order</th><th>Created</th><th>Restaurant</th><th class="num">Items</th><th class="num">Total</th><th>Arrives</th><th>Status</th><th></th></tr>
+          </thead>
+          <tbody id="orders-body"></tbody>
+        </table>
+      </div>
     </section>
 
-    <section id="runs" class="tab">
-      <h1>Runs</h1>
-      <table>
-        <thead><tr><th>#</th><th>Request</th><th>Status</th><th>Steps</th><th>Errors</th><th>Started</th></tr></thead>
-        <tbody id="runs-body"></tbody>
-      </table>
-      <div id="run-detail"></div>
+    <section id="view-runs" class="view">
+      <header class="title-row">
+        <div>
+          <h1>Runs</h1>
+          <p class="subline">Every step the agent took, with what it sent and got back.</p>
+        </div>
+      </header>
+      <div class="runs-split">
+        <ul class="panel flush run-list" id="run-list"></ul>
+        <div class="panel" id="run-detail"></div>
+      </div>
     </section>
 
-    <section id="team" class="tab">
-      <h1>Team</h1>
-      <form id="team-form" class="team-form">
-        <label>Office address <input name="address"></label>
-        <label>Headcount <input name="headcount" type="number" min="1"></label>
-        <label>Budget per person ($) <input name="budget_per_person" type="number" min="0" step="0.5"></label>
-        <label>Dietary notes <textarea name="dietary_notes" rows="3"></textarea></label>
-        <button class="primary">Save</button>
-        <span id="team-saved" class="muted"></span>
+    <section id="view-team" class="view">
+      <header class="title-row">
+        <div>
+          <h1>Team</h1>
+          <p class="subline">The agent reads these details when it plans an order.</p>
+        </div>
+      </header>
+      <form id="team-form" class="settings">
+        <div class="setting">
+          <div><h2>Office</h2><p class="muted">Where the food is delivered.</p></div>
+          <div class="panel fields">
+            <label>Name <input name="name"></label>
+            <label>Address <input name="address"></label>
+          </div>
+        </div>
+        <div class="setting">
+          <div><h2>Headcount and budget</h2><p class="muted">How many people a usual order feeds, and what you aim to spend on each.</p></div>
+          <div class="panel fields two">
+            <label>Headcount <input name="headcount" type="number" min="1"></label>
+            <label>Budget per person <span class="input-affix"><span>$</span><input name="budget_per_person" type="number" min="0" step="0.5"></span></label>
+          </div>
+        </div>
+        <div class="setting">
+          <div><h2>Dietary notes</h2><p class="muted">Allergies and preferences, in your own words.</p></div>
+          <div class="panel fields">
+            <label class="sr-only" for="dietary">Dietary notes</label>
+            <textarea id="dietary" name="dietary_notes" rows="3"></textarea>
+          </div>
+        </div>
+        <div class="settings-foot">
+          <span class="muted" id="team-saved"></span>
+          <button class="button primary">Save changes</button>
+        </div>
       </form>
     </section>
   </main>

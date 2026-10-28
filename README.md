@@ -26,10 +26,10 @@ npm run reset-db
 
 | Tab | What it does |
 | --- | --- |
-| Order | Type a request. The agent plans an order, and you place it or cancel it. |
-| Orders | Every order the agent has proposed, and its status. |
+| New order | Type a request and watch the agent work. It proposes an order, and you place it or cancel it. |
+| Orders | Every order the agent has proposed, its status, and a link to the run behind it. |
 | Runs | Every agent run, and each step it took: model calls and tool calls, with inputs and outputs. |
-| Team | The office address, headcount, budget per person, and dietary notes. |
+| Team | The office's name, address, headcount, budget per person, and dietary notes. |
 
 ## The agent
 

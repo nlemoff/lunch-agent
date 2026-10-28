@@ -67,4 +67,4 @@ INSERT INTO run_steps (run_id, kind, name, input, output, error, duration_ms) VA
   (1, 'tool', 'propose_order', '{"restaurant_id":"casa-verde"}', '{"order_id":1}', NULL, 4);
 
 INSERT INTO orders (id, run_id, restaurant_id, items, total, eta, status, created_at) VALUES
-  (1, 1, 'casa-verde', '[{"item_id":"cv-taco-bar","name":"Taco bar (chicken, carnitas, veggie)","quantity":3,"price":150},{"item_id":"cv-chips","name":"Chips and guacamole","quantity":3,"price":18}]', 504, '12:40 PM', 'placed', '2026-10-23 18:02:39');
+  (1, 1, 'casa-verde', '[{"item_id":"cv-taco-bar","name":"Taco bar (chicken, carnitas, veggie)","quantity":3,"price":150,"serves":10,"tags":"gluten-free"},{"item_id":"cv-chips","name":"Chips and guacamole","quantity":3,"price":18,"serves":6,"tags":"vegetarian,vegan,gluten-free"}]', 504, '12:40 PM', 'placed', '2026-10-23 18:02:39');

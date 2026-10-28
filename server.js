@@ -2,7 +2,7 @@ import { createServer } from "node:http";
 import { readFileSync } from "node:fs";
 import { extname, join } from "node:path";
 import { db } from "./src/db.js";
-import { MODEL, runAgent } from "./src/agent.js";
+import { MODEL, startAgent } from "./src/agent.js";
 
 if (!process.env.OPENROUTER_API_KEY) {
   console.error("Missing OPENROUTER_API_KEY. Add it to .env, or as a Codespaces secret.");
@@ -13,7 +13,8 @@ const PORT = Number(process.env.PORT ?? 3000);
 const MIME = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css" };
 
 const parseOrder = (order) => order && { ...order, items: JSON.parse(order.items) };
-const ORDER_SELECT = `SELECT o.*, r.name AS restaurant_name FROM orders o JOIN restaurants r ON r.id = o.restaurant_id`;
+const ORDER_SELECT = `SELECT o.*, r.name AS restaurant_name, r.distance_miles, r.rating, r.review_count
+  FROM orders o JOIN restaurants r ON r.id = o.restaurant_id`;
 
 async function readBody(req) {
   let body = "";
@@ -29,8 +30,9 @@ const routes = [
     "PUT",
     /^\/api\/office$/,
     async (req) => {
-      const { address, headcount, budget_per_person, dietary_notes } = await readBody(req);
-      db.prepare("UPDATE office SET address = ?, headcount = ?, budget_per_person = ?, dietary_notes = ? WHERE id = 1").run(
+      const { name, address, headcount, budget_per_person, dietary_notes } = await readBody(req);
+      db.prepare("UPDATE office SET name = ?, address = ?, headcount = ?, budget_per_person = ?, dietary_notes = ? WHERE id = 1").run(
+        name,
         address,
         headcount,
         budget_per_person,
@@ -45,11 +47,7 @@ const routes = [
     /^\/api\/runs$/,
     async (req) => {
       const { request } = await readBody(req);
-      const runId = await runAgent(request);
-      return {
-        run: db.prepare("SELECT * FROM runs WHERE id = ?").get(runId),
-        order: parseOrder(db.prepare(`${ORDER_SELECT} WHERE o.run_id = ? ORDER BY o.id DESC LIMIT 1`).get(runId)),
-      };
+      return { runId: startAgent(request) };
     },
   ],
 
@@ -71,8 +69,13 @@ const routes = [
     (req, [id]) => ({
       run: db.prepare("SELECT * FROM runs WHERE id = ?").get(id),
       steps: db.prepare("SELECT * FROM run_steps WHERE run_id = ? ORDER BY id").all(id),
+      order: parseOrder(db.prepare(`${ORDER_SELECT} WHERE o.run_id = ? ORDER BY o.id DESC LIMIT 1`).get(id)),
     }),
   ],
+
+  ["GET", /^\/api\/restaurants$/, () => db.prepare("SELECT id, name, cuisine FROM restaurants").all()],
+
+  ["GET", /^\/api\/restaurants$/, () => db.prepare("SELECT id, name, cuisine FROM restaurants").all()],
 
   ["GET", /^\/api\/orders$/, () => db.prepare(`${ORDER_SELECT} ORDER BY o.id DESC`).all().map(parseOrder)],
 
@@ -109,7 +112,7 @@ createServer(async (req, res) => {
   const file = pathname === "/" ? "index.html" : pathname.slice(1);
   try {
     const content = readFileSync(join(import.meta.dirname, "public", file.replaceAll("..", "")));
-    res.writeHead(200, { "Content-Type": MIME[extname(file)] ?? "text/plain" });
+    res.writeHead(200, { "Content-Type": MIME[extname(file)] ?? "text/plain", "Cache-Control": "no-store" });
     res.end(content);
   } catch {
     res.writeHead(404).end("Not found");
