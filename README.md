@@ -1,6 +1,8 @@
-# Lunch Agent
+# Platter
 
-Lunch Agent orders lunch for an office. Someone types a request like "order me mediterranean food to feed 30 hungry engineers". The agent finds restaurants nearby, checks menus and catering capacity, prices the order, and asks the person to confirm before it's placed.
+Platter runs a lunch-ordering agent for companies. Each company gets its own workspace with its office, headcount, budget, and dietary notes. This repo is the agent and app for one workspace, Fieldnote HQ.
+
+Someone types a request like "order me mediterranean food to feed 30 hungry engineers". The agent finds restaurants nearby, checks menus and catering capacity, prices the order, and asks the person to confirm before it's placed.
 
 ## Run it
 

@@ -118,5 +118,5 @@ createServer(async (req, res) => {
     res.writeHead(404).end("Not found");
   }
 }).listen(PORT, () => {
-  console.log(`Lunch Agent running at http://localhost:${PORT} (model: ${MODEL})`);
+  console.log(`Platter running at http://localhost:${PORT} (model: ${MODEL})`);
 });
