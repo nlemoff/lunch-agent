@@ -12,11 +12,11 @@
     }
   },
   "secrets": {
-    "OPENROUTER_API_KEY": {
+    "OPENAI_API_KEY": {
       "description": "Used by the app's agent."
     }
   },
-  "postCreateCommand": "npm run reset-db && echo 'unset ANTHROPIC_API_KEY' >> ~/.bashrc",
+  "postCreateCommand": "npm install && npm run reset-db && echo 'unset ANTHROPIC_API_KEY' >> ~/.bashrc",
   "forwardPorts": [
     3000
   ],

@@ -1,8 +1,7 @@
 import { db } from "./db.js";
-import { tools, toolDefinitions } from "./tools.js";
+import { tools } from "./tools.js";
+import { MODEL, startConversation } from "./llm.js";
 
-const BASE_URL = process.env.OPENROUTER_BASE_URL ?? "https://openrouter.ai/api/v1";
-export const MODEL = process.env.AGENT_MODEL ?? "nvidia/nemotron-3.5-super-vl:free";
 const MAX_TURNS = 15;
 
 const SYSTEM_PROMPT = `You are a lunch-ordering agent for an office. Someone on the team tells you what they want, and you plan the order.
@@ -21,24 +20,9 @@ function recordStep(runId, kind, name, input, output, error, startedAt) {
   ).run(runId, kind, name, input, output, error, Date.now() - startedAt);
 }
 
-async function chat(messages) {
-  const res = await fetch(`${BASE_URL}/chat/completions`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-      "Content-Type": "application/json",
-      "X-Title": "Platter",
-    },
-    body: JSON.stringify({ model: MODEL, messages, tools: toolDefinitions }),
-  });
-  if (!res.ok) throw new Error(`OpenRouter ${res.status}: ${(await res.text()).slice(0, 300)}`);
-  const body = await res.json();
-  return body.choices[0].message;
-}
-
 async function runTool(runId, call) {
   const startedAt = Date.now();
-  const { name, arguments: rawArgs } = call.function;
+  const { name, args: rawArgs } = call;
   try {
     const tool = tools[name];
     if (!tool) throw new Error(`Unknown tool "${name}"`);
@@ -59,37 +43,32 @@ export function startAgent(request) {
 }
 
 async function runAgent(runId, request) {
-  const messages = [
-    { role: "system", content: SYSTEM_PROMPT },
-    { role: "user", content: request },
-  ];
+  const conversation = startConversation(SYSTEM_PROMPT, request);
 
   try {
     for (let turn = 0; turn < MAX_TURNS; turn++) {
       const startedAt = Date.now();
-      const message = await chat(messages);
-      const calls = message.tool_calls ?? [];
+      const { text, calls } = await conversation.next();
       recordStep(
         runId,
         "llm",
         MODEL,
         null,
-        JSON.stringify({ content: message.content, tool_calls: calls.map((c) => c.function.name) }),
+        JSON.stringify({ content: text, tool_calls: calls.map((c) => c.name) }),
         null,
         startedAt,
       );
-      messages.push(message);
 
       if (calls.length === 0) {
         db.prepare("UPDATE runs SET status = 'done', final_message = ?, finished_at = datetime('now') WHERE id = ?").run(
-          message.content,
+          text,
           runId,
         );
         return;
       }
-      for (const call of calls) {
-        messages.push({ role: "tool", tool_call_id: call.id, content: await runTool(runId, call) });
-      }
+      const results = [];
+      for (const call of calls) results.push({ id: call.id, output: await runTool(runId, call) });
+      conversation.addResults(results);
     }
     throw new Error(`Stopped after ${MAX_TURNS} turns without an answer`);
   } catch (err) {

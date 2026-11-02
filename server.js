@@ -2,10 +2,11 @@ import { createServer } from "node:http";
 import { readFileSync } from "node:fs";
 import { extname, join } from "node:path";
 import { db } from "./src/db.js";
-import { MODEL, startAgent } from "./src/agent.js";
+import { startAgent } from "./src/agent.js";
+import { MODEL, PROVIDER } from "./src/llm.js";
 
-if (!process.env.OPENROUTER_API_KEY) {
-  console.error("Missing OPENROUTER_API_KEY. Add it to .env, or as a Codespaces secret.");
+if (!PROVIDER) {
+  console.error("Missing an API key. Add ANTHROPIC_API_KEY or OPENAI_API_KEY to .env.");
   process.exit(1);
 }
 
@@ -118,5 +119,5 @@ createServer(async (req, res) => {
     res.writeHead(404).end("Not found");
   }
 }).listen(PORT, () => {
-  console.log(`Platter running at http://localhost:${PORT} (model: ${MODEL})`);
+  console.log(`Platter running at http://localhost:${PORT} (${PROVIDER}: ${MODEL})`);
 });
